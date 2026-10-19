@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>그림 교재</title>
+<style>
+:root{--bg:#fbfaf7;--card:#fff;--ink:#1f2328;--muted:#5b6470;--line:#e4e1da;--accent:#2f6fde;--bar:#16a34a}
+@media (prefers-color-scheme:dark){:root{--bg:#16181c;--card:#1f2228;--ink:#e8e6e1;--muted:#a0a6ae;--line:#33373e;--accent:#79a6ff;--bar:#22c55e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,"Apple SD Gothic Neo",sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 16px}
+header h1{font-size:18px;margin:0 0 6px}
+.prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.prog div{height:100%;background:var(--bar);width:0}
+#ptext{font-size:13px;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:14px}
+nav a{color:var(--accent);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+main{max-width:1100px;margin:0 auto;padding:16px}
+section{margin:0 0 36px}
+section h2{font-size:15px;color:var(--muted);margin:0 0 6px}
+figure{margin:0 0 10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px}
+figure img{width:100%;height:auto;display:block;border-radius:6px}
+figcaption{font-size:13px;color:var(--muted);padding:4px 2px 0}
+.pending figcaption::after{content:" · 아직 생성 중 (원본 표시)";color:#c2410c}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>마이크로프로세서 그림 교재 <span id="ptext"></span></h1>
+
+<nav>
+<a href="#p1">도입 p1</a><a href="#p10">DC 속도 p10</a><a href="#p32">H-브리지 p32</a><a href="#p37">드라이버 p37</a><a href="#p42">DC 방향 예제 p42</a><a href="#p62">서보 p62</a><a href="#p77">map p77</a><a href="#p87">자동문 p87</a><a href="#p97">스테핑 p97</a><a href="#p117">BLDC p117</a>
+</nav>
+</header>
+<main id="m"></main>
+<script>
+const m=document.getElementById('m');
+const pad=n=>String(n).padStart(3,'0');
+for(let p=1;p<=129;p++){
+  const s=document.createElement('section');s.id='p'+p;
+  s.innerHTML=`<h2>p${p}</h2>
+  <figure class="note"><img loading="lazy" src="필기/p${pad(p)}.jpg" alt="p${p} 필기"><figcaption>① 교재 + 필기</figcaption></figure>
+  <figure class="concept"><img loading="lazy" src="개념/p${pad(p)}.jpg" alt="p${p} 개념 그림"><figcaption>② 개념 그림</figcaption></figure>`;
+  const ni=s.querySelector('.note img');
+  ni.onerror=()=>{ni.onerror=null;ni.src=`교재-hd/p-${pad(p)}.jpg`;ni.parentElement.classList.add('pending');};
+  const ci=s.querySelector('.concept img');
+  ci.onerror=()=>ci.parentElement.classList.add('hidden');
+  m.appendChild(s);
+}
+async function prog(){
+  try{
+    const r=await fetch('jobs/status.json?'+Date.now());const s=await r.json();
+    document.getElementById('bar').style.width=(100*s.done/Math.max(s.total,1))+'%';
+    let t=`· ${s.done}/${s.total}장 완성`;
+    if(!s.parts_ready)t+=' (프롬프트 작성 중이라 총량이 늘어날 수 있음)';
+    if(s.paused_until*1000>Date.now())t+=` · 사용량 한도로 쉬는 중, ${new Date(s.paused_until*1000).toLocaleTimeString('ko-KR')} 재개`;
+    document.getElementById('ptext').textContent=t;
+  }catch(e){}
+}
+// 새로 만들어진 그림을 새로고침 없이 끼워 넣는다
+function tryLoad(src,ok){const t=new Image();t.onload=()=>ok(src+'?v='+Date.now());t.src=src+'?v='+Date.now();}
+function refreshImages(){
+  for(let p=1;p<=129;p++){
+    const s=document.getElementById('p'+p);
+    const nf=s.querySelector('.note');
+    if(nf.classList.contains('pending'))
+      tryLoad(`필기/p${pad(p)}.jpg`,u=>{const i=nf.querySelector('img');i.onerror=null;i.src=u;nf.classList.remove('pending');});
+    const cf=s.querySelector('.concept');
+    if(cf.classList.contains('hidden'))
+      tryLoad(`개념/p${pad(p)}.jpg`,u=>{const i=cf.querySelector('img');i.onerror=null;i.src=u;cf.classList.remove('hidden');});
+  }
+}
+let lastDone=-1;
+async function tick(){
+  await prog();
+  const d=parseInt((document.getElementById('ptext').textContent.match(/(\d+)\//)||[])[1]);
+  if(d!==lastDone){lastDone=d;refreshImages();}
+}
+tick();setInterval(tick,3000);
+</script>
+</body>
+</html>

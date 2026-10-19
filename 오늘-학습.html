@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이크로프로세서 하루 완성</title>
+<style>
+:root{--bg:#fbfaf7;--card:#fff;--ink:#1f2328;--muted:#5b6470;--line:#e4e1da;--accent:#2f6fde;--warn:#c2410c;--code:#f3f1ec}
+@media (prefers-color-scheme:dark){:root{--bg:#16181c;--card:#1f2228;--ink:#e8e6e1;--muted:#a0a6ae;--line:#33373e;--accent:#79a6ff;--warn:#fb923c;--code:#2a2d33}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 -apple-system,"Apple SD Gothic Neo","Pretendard",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 80px}
+h1{font-size:28px;margin:0 0 4px}
+h2{font-size:22px;margin:48px 0 8px;padding-top:16px;border-top:2px solid var(--line)}
+h3{font-size:17px;margin:24px 0 8px}
+.sub{color:var(--muted);margin:0 0 16px}
+nav{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+nav a{color:var(--accent);text-decoration:none}
+.one{background:var(--card);border-left:4px solid var(--accent);padding:10px 14px;border-radius:6px;font-weight:600}
+figure{margin:16px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px}
+figure img{width:100%;height:auto;display:block;border-radius:8px}
+figcaption{color:var(--muted);font-size:14px;padding:6px 4px 0}
+.pages{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.pages figure{margin:0}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.55}
+code{font-family:ui-monospace,Menlo,monospace}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+th{background:var(--code)}
+.warn{border-left:4px solid var(--warn);background:var(--card);padding:10px 14px;border-radius:6px}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:6px 0}
+summary{cursor:pointer;font-weight:600}
+</style>
+</head>
+<body><main>
+<h1>마이크로프로세서 하루 완성</h1>
+<p class="sub">교재 129쪽 · 순서대로 내려가면 됩니다 · 예제마다 ① 핀 연결 적기 → ② 코드 한 줄씩 읽기 → ③ 숫자 바꿔 예측</p>
+<nav>
+<a href="#s0">0. 도입 (40분)</a> · <a href="#s1">1. DC 속도 (1시간)</a> · <a href="#s2">2. DC 방향 (1시간 30분)</a> · <a href="#s3">3. 서보 (1시간 30분)</a> · <a href="#s4">4. 스테핑·BLDC (1시간)</a> · <a href="#s5">5. 셀프 테스트 (30분)</a>
+</nav>
+
+<!-- ============ 0 ============ -->
+<h2 id="s0">0. 도입 — 아두이노는 "작은 컴퓨터가 한 칩에 다 들어간 것" <small>(p1~8)</small></h2>
+<p class="one">CPU는 두뇌만 있는 칩이고, 아두이노 칩(MCU)은 두뇌·메모리·입출력이 한 칩에 다 들어 있다.</p>
+<figure><img src="generated-images/01-cpu-vs-mcu.jpg" alt="CPU와 MCU 비교 그림"><figcaption>설명 그림: CPU는 부품을 밖에 붙여야 하고, MCU는 혼자서 다 한다</figcaption></figure>
+<div class="pages">
+<figure><img src="교재/p-005.jpg"><figcaption>교재 p5 · 차이표 (시험에 나오기 좋음)</figcaption></figure>
+<figure><img src="교재/p-007.jpg"><figcaption>교재 p7 · 우노 보드 사양</figcaption></figure>
+</div>
+<h3>교재에 없지만 먼저 알아야 하는 것</h3>
+<figure><img src="generated-images/02-digital-vs-analog.jpg" alt="디지털과 아날로그"><figcaption>설명 그림: 디지털은 켜짐/꺼짐 두 가지, 아날로그는 그 사이의 값</figcaption></figure>
+<ul>
+<li><b>핀</b> = 아두이노 가장자리에 있는 구멍. 번호가 붙어 있고, 코드에서 그 번호로 부른다.</li>
+<li><b>GND</b> = 전기가 돌아오는 길(0V). 모든 부품은 GND에 연결해야 회로가 닫혀서 동작한다.</li>
+<li><b>~ 표시가 있는 핀(3, 5, 6, 9, 10, 11)</b>만 세기 조절(PWM)을 할 수 있다.</li>
+</ul>
+<pre><code>void setup() {   // 전원을 켜면 딱 한 번 실행 → 준비 단계 (핀 설정)
+}
+void loop() {    // setup이 끝나면 무한 반복 → 실제로 하는 일
+}</code></pre>
+
+<!-- ============ 1 ============ -->
+<h2 id="s1">1. DC 모터 속도 — 빠르게 켰다 껐다 해서 세기를 조절한다 <small>(p10~31)</small></h2>
+<p class="one">아두이노 핀은 켜짐(5V)과 꺼짐(0V)밖에 못 낸다. 그래서 아주 빠르게 켰다 껐다 해서 "평균 전압"을 만든다. 이게 PWM이다.</p>
+<figure><img src="generated-images/03-pwm.jpg" alt="PWM 설명"><figcaption>설명 그림: 켜진 시간의 비율(듀티비)이 길수록 모터가 빠르다</figcaption></figure>
+<div class="pages">
+<figure><img src="교재/p-013.jpg"><figcaption>교재 p13 · PWM 정의</figcaption></figure>
+<figure><img src="교재/p-014.jpg"><figcaption>교재 p14 · 듀티사이클과 평균전압</figcaption></figure>
+</div>
+<table><tr><th>analogWrite 값</th><th>켜진 비율</th><th>평균 전압 (5V 기준)</th><th>모터</th></tr>
+<tr><td>0</td><td>0%</td><td>0V</td><td>정지</td></tr>
+<tr><td>64</td><td>25%</td><td>약 1.25V</td><td>느림</td></tr>
+<tr><td>127</td><td>50%</td><td>약 2.5V</td><td>중간</td></tr>
+<tr><td>255</td><td>100%</td><td>5V</td><td>최고 속도</td></tr></table>
+
+<h3>예제 1 (p16~18) — 대표 예제, 이것만 깊게</h3>
+<div class="pages">
+<figure><img src="교재/p-016.jpg"><figcaption>p16 · 모터를 핀에 직접 꽂으면 과부하(100mA) → 아두이노 위험</figcaption></figure>
+<figure><img src="교재/p-018.jpg"><figcaption>p18 · 코드</figcaption></figure>
+</div>
+<pre><code>int dc = 11;          // 모터는 11번 핀 (~ 있는 핀이라 PWM 가능)
+int speed = 0;        // 지금 속도, 처음엔 0
+
+void setup() {
+  Serial.begin(9600);       // PC 화면(시리얼 모니터)에 글씨를 보낼 준비
+  pinMode(dc, OUTPUT);      // 11번 핀은 "내보내는" 용도
+}
+void loop() {
+  analogWrite(dc, speed);   // 11번 핀에 speed 세기로 PWM 출력
+  Serial.print("speed =");
+  Serial.println(speed);    // 화면에 현재 속도 표시
+  speed = speed + 85;       // 0 → 85 → 170 → 255
+  if (speed > 255) speed = 0;  // 255 넘으면 다시 0부터
+  delay(1000);              // 1초 기다림
+}</code></pre>
+<p><b>예측해 보기:</b> 85를 51로 바꾸면? → 0, 51, 102, 153, 204, 255 여섯 단계로 1초씩 빨라진다.</p>
+
+<h3>예제 2~4 — 앞 예제와 다른 점만</h3>
+<table><tr><th>예제</th><th>쪽</th><th>새로 나온 것</th></tr>
+<tr><td>2</td><td>p19~22</td><td><b>NPN 트랜지스터</b>를 사이에 둔다. 아두이노는 트랜지스터에 "열어라"라는 신호만 주고, 큰 전류는 트랜지스터가 흘려준다 → 아두이노 보호. PWM은 9번 핀.</td></tr>
+<tr><td>3</td><td>p23~27</td><td><code>Serial.read()</code>(글자 1개 읽기), <code>Serial.parseInt()</code>("153"을 숫자 153으로), <code>constrain(speed, 0, 255)</code>(범위 밖 값을 0~255로 잘라냄)</td></tr>
+<tr><td>4</td><td>p28~31</td><td>시리얼로 입력한 값으로 속도 제어하는 응용</td></tr></table>
+<div class="pages">
+<figure><img src="교재/p-024.jpg"><figcaption>p24 · read와 parseInt 차이</figcaption></figure>
+<figure><img src="교재/p-025.jpg"><figcaption>p25 · constrain</figcaption></figure>
+</div>
+
+<!-- ============ 2 ============ -->
+<h2 id="s2">2. DC 모터 방향 — 전기가 흐르는 방향을 뒤집으면 모터도 반대로 돈다 <small>(p32~61)</small></h2>
+<p class="one">스위치 4개를 H 모양으로 배치해서, 어느 두 개를 켜느냐에 따라 전기가 모터를 왼쪽→오른쪽 또는 오른쪽→왼쪽으로 지나가게 만든다.</p>
+<figure><img src="generated-images/04-h-bridge.jpg" onerror="this.onerror=null;this.src='generated-images/04-h-bridge.svg'" alt="H-브리지"><figcaption>설명 그림: 대각선 두 스위치를 켜는 게 핵심</figcaption></figure>
+<div class="pages">
+<figure><img src="교재/p-033.jpg"><figcaption>p33 · 정회전: Q1·Q4 On, Q2·Q3 Off</figcaption></figure>
+<figure><img src="교재/p-035.jpg"><figcaption>p35 · 역회전: 반대 대각선</figcaption></figure>
+</div>
+<p>교재 회로의 Q1~Q4가 그림의 스위치다. 트랜지스터는 "전기로 켜고 끄는 스위치"라고만 알면 충분하다.</p>
+
+<h3>모터 드라이버 L293D — H-브리지를 칩 하나에 넣은 것 (p37~41)</h3>
+<figure><img src="generated-images/05-motor-driver.jpg" onerror="this.onerror=null;this.src='generated-images/05-motor-driver.svg'" alt="모터 드라이버"><figcaption>설명 그림: 아두이노는 명령만, 큰 전류는 드라이버가</figcaption></figure>
+<div class="pages">
+<figure><img src="교재/p-039.jpg"><figcaption>p39 · L293D 특징</figcaption></figure>
+<figure><img src="교재/p-040.jpg"><figcaption>p40 · 방향 제어 진리표 ★가장 중요</figcaption></figure>
+</div>
+<table><tr><th>입력1</th><th>입력2</th><th>모터</th></tr>
+<tr><td>HIGH</td><td>LOW</td><td>한쪽으로 회전</td></tr>
+<tr><td>LOW</td><td>HIGH</td><td>반대쪽으로 회전</td></tr>
+<tr><td>HIGH</td><td>HIGH</td><td>정지</td></tr>
+<tr><td>LOW</td><td>LOW</td><td>정지</td></tr></table>
+<p>외우는 법: <b>두 입력이 다르면 돈다, 같으면 선다.</b> 방향만 바꿀 땐 <code>digitalWrite</code>, 속도까지 바꿀 땐 HIGH 대신 <code>analogWrite(핀, 0~255)</code>.</p>
+
+<h3>예제 5 (p42~45) — 대표 예제</h3>
+<div class="pages">
+<figure><img src="교재/p-043.jpg"><figcaption>p43 · 회로: 아두이노 5번→L293D 10번, 6번→15번, L293D 11·14번→모터</figcaption></figure>
+<figure><img src="교재/p-044.jpg"><figcaption>p44 · 코드</figcaption></figure>
+</div>
+<pre><code>int motorA = 5;   // L293D 입력 IN3
+int motorB = 6;   // L293D 입력 IN4
+
+void setup() {
+  pinMode(motorA, OUTPUT);
+  pinMode(motorB, OUTPUT);
+}
+void loop() {
+  analogWrite(motorA, HIGH); analogWrite(motorB, LOW);  delay(2000); // 다름 → 정회전 2초
+  analogWrite(motorA, LOW);  analogWrite(motorB, LOW);  delay(1000); // 같음 → 정지 1초
+  analogWrite(motorA, LOW);  analogWrite(motorB, HIGH); delay(2000); // 반대로 다름 → 역회전 2초
+  analogWrite(motorA, LOW);  analogWrite(motorB, LOW);  delay(1000); // 정지 1초
+}</code></pre>
+<div class="warn"><b>주의 (교재 코드의 함정):</b> <code>HIGH</code>는 숫자로 1이다. 그래서 <code>analogWrite(motorA, HIGH)</code>는 사실 <code>analogWrite(motorA, 1)</code>, 즉 1/255 세기다. 실제 보드에서는 모터가 거의 안 돌 수 있다. 의도대로 하려면 <code>digitalWrite(motorA, HIGH)</code> 또는 <code>analogWrite(motorA, 255)</code>를 쓴다. 시험에서 "analogWrite에 넣는 값의 범위"를 물으면 0~255라고 답한다.</div>
+
+<h3>예제 6~9 — 앞 예제와 다른 점만</h3>
+<table><tr><th>예제</th><th>쪽</th><th>새로 나온 것</th><th>핵심 코드</th></tr>
+<tr><td>6</td><td>p46~48</td><td>스위치 누르면 역회전</td><td><code>digitalRead(4)</code>로 스위치 상태 읽고 <code>if/else</code>로 방향 결정</td></tr>
+<tr><td>7</td><td>p49~52</td><td>키보드로 1=정회전, 2=역회전, 0=정지</td><td><code>if (Serial.available())</code> → <code>in_data = Serial.read()</code> → <code>if (in_data == '1')</code>. 따옴표 '1'은 글자다</td></tr>
+<tr><td>8</td><td>p53~55</td><td>기울기 센서가 기울면 회전</td><td>스위치 대신 <code>digitalRead(tiltPin)</code>. 구조는 예제 6과 같다</td></tr>
+<tr><td>9</td><td>p56~61</td><td>모터 2개</td><td>L293D 한 칩으로 모터 2개(핀 4개). 같은 패턴을 두 번 쓴다</td></tr></table>
+<div class="pages">
+<figure><img src="교재/p-047.jpg"><figcaption>p47 · 예제 6 코드</figcaption></figure>
+<figure><img src="교재/p-050.jpg"><figcaption>p50 · 예제 7 코드</figcaption></figure>
+</div>
+
+<!-- ============ 3 ============ -->
+<h2 id="s3">3. 서보 모터 — 원하는 각도로 가서 멈추는 모터 <small>(p62~96)</small></h2>
+<p class="one">서보 안에는 작은 DC 모터와 "지금 몇 도인지 재는 장치"가 들어 있어서, 목표 각도에 도착하면 스스로 멈춘다.</p>
+<figure><img src="generated-images/06-servo.jpg" onerror="this.onerror=null;this.src='generated-images/06-servo.svg'" alt="서보 모터"><figcaption>설명 그림: 목표와 현재를 계속 비교한다(폐쇄 루프)</figcaption></figure>
+<div class="pages">
+<figure><img src="교재/p-066.jpg"><figcaption>p66 · 선 색: 갈색 GND, 빨강 VCC, 주황 신호</figcaption></figure>
+<figure><img src="교재/p-068.jpg"><figcaption>p68 · 펄스 길이 1ms=0도, 1.5ms=90도, 2ms=180도</figcaption></figure>
+</div>
+<h3>Servo 라이브러리 사용법 (p70~71) — 5줄이면 끝</h3>
+<pre><code>#include &lt;Servo.h&gt;   // 남이 만들어 둔 서보 제어 코드 묶음을 가져옴
+Servo myServo;         // 서보 하나를 "myServo"라는 이름으로 만듦
+myServo.attach(9);     // 9번 핀에 연결했다고 알려줌 (setup 안에서)
+myServo.write(90);     // 90도로 이동
+int a = myServo.read(); // 지금 설정된 각도 읽기</code></pre>
+
+<h3>예제 1 (p69~73) — 1도씩 0→180→0</h3>
+<div class="pages">
+<figure><img src="교재/p-072.jpg"><figcaption>p72 · 코드</figcaption></figure>
+</div>
+<pre><code>for (angle = 0; angle &lt;= 180; angle += 1) {   // angle을 0부터 180까지 1씩 올리며 반복
+  myservo.write(angle);                       // 그 각도로 이동
+  delay(15);                                  // 조금씩 천천히 움직이게
+}
+for (angle = 180; angle &gt;= 0; angle -= 1) {   // 다시 180에서 0으로
+  myservo.write(angle);
+  delay(15);
+}</code></pre>
+<p><b>예측해 보기:</b> <code>angle += 1</code>을 <code>angle += 15</code>로 바꾸면? → 15도씩 뚝뚝 끊어서 움직인다(예제 2와 비슷).</p>
+
+<h3>예제 3 (p77~82) — 가변저항으로 각도 조절 ★map 함수</h3>
+<figure><img src="generated-images/07-map-potentiometer.jpg" onerror="this.onerror=null;this.src='generated-images/07-map-potentiometer.svg'" alt="map 함수"><figcaption>설명 그림: 0~1023 자를 0~180 자로 옮겨 재는 것</figcaption></figure>
+<div class="pages">
+<figure><img src="교재/p-078.jpg"><figcaption>p78 · map 형식</figcaption></figure>
+<figure><img src="교재/p-079.jpg"><figcaption>p79 · 0→0도, 512→90도, 1023→180도</figcaption></figure>
+</div>
+<pre><code>int value = analogRead(A0);                 // 가변저항 값 0~1023
+int angle = map(value, 0, 1023, 0, 180);    // 0~180도로 변환
+myServo.write(angle);</code></pre>
+
+<h3>예제 2·4·5와 레포트 — 다른 점만</h3>
+<table><tr><th>예제</th><th>쪽</th><th>새로 나온 것</th></tr>
+<tr><td>2</td><td>p74~76</td><td>키보드 'u'면 +15도, 'd'면 -15도. <code>if (angle &gt; 180) angle = 180;</code>으로 범위 제한</td></tr>
+<tr><td>4</td><td>p83~86</td><td>각도마다 LED 하나씩 켜기 (<code>digitalWrite(led1, HIGH)</code>)</td></tr>
+<tr><td>5</td><td>p87~94</td><td>PIR 센서(사람의 체온 적외선 감지)가 사람을 보면 서보로 문 열기</td></tr>
+<tr><td>레포트 7-5</td><td>p95</td><td>토양수분센서 값이 낮으면(물 부족) 서보를 돌려 물 주기. 예제 3(<code>analogRead</code>) + 예제 5(<code>if</code>로 판단 후 서보 이동)를 합친 구조</td></tr></table>
+<div class="pages">
+<figure><img src="교재/p-095.jpg"><figcaption>p95 · 레포트 7-5</figcaption></figure>
+<figure><img src="교재/p-096.jpg"><figcaption>p96 · DC 모터와 서보 차이 ★</figcaption></figure>
+</div>
+
+<!-- ============ 4 ============ -->
+<h2 id="s4">4. 스테핑 · BLDC — 정확히 한 칸씩, 그리고 브러시 없는 모터 <small>(p97~129)</small></h2>
+<figure><img src="generated-images/08-motor-comparison.jpg" onerror="this.onerror=null;this.src='generated-images/08-motor-comparison.svg'" alt="모터 4종 비교"><figcaption>설명 그림: 모터 4종류 한눈에</figcaption></figure>
+<h3>스테핑 모터 (p97~116)</h3>
+<p class="one">신호(펄스)를 한 번 줄 때마다 정해진 각도만큼 딱 한 칸 돈다. 그래서 몇 번 줬는지만 세면 위치를 정확히 안다.</p>
+<p><b>회전각 = 펄스 수 × 한 칸 각도.</b> 한 칸이 1.8도면 200번 → 360도(한 바퀴).</p>
+<div class="pages">
+<figure><img src="교재/p-097.jpg"><figcaption>p97 · 펄스 수와 각도 ★계산 문제 나오기 좋음</figcaption></figure>
+<figure><img src="교재/p-099.jpg"><figcaption>p99 · 고정자(바깥 코일) / 회전자(안쪽 자석)</figcaption></figure>
+<figure><img src="교재/p-101.jpg"><figcaption>p101 · ULN2003 드라이버: 아두이노 4핀, 모터 5핀</figcaption></figure>
+<figure><img src="교재/p-106.jpg"><figcaption>p106 · 코드</figcaption></figure>
+</div>
+<pre><code>#include &lt;Stepper.h&gt;
+const int stepsPerRevolution = 2048;              // 28BYJ-48은 2048칸이 한 바퀴
+Stepper myStepper(stepsPerRevolution, 11, 9, 10, 8);  // 연결한 핀 4개
+myStepper.setSpeed(0.15 * 64);                    // 속도 설정 (setup 안)
+myStepper.step(stepsPerRevolution);               // + 값: 한 바퀴 정방향
+myStepper.step(-stepsPerRevolution);              // - 값: 한 바퀴 역방향</code></pre>
+<p>p108~115 산업용 스테핑 모터와 드라이버 사양은 표를 훑어만 본다. p116 서보와 스테핑 비교표는 꼭 본다.</p>
+
+<h3>BLDC 모터 (p117~129)</h3>
+<p class="one">일반 DC 모터는 브러시(문지르는 부품)가 닳는데, BLDC는 브러시를 없애고 자석이 돌게 만들어서 오래 가고 조용하고 빠르다.</p>
+<ul>
+<li>코일 세 개(U, V, W상)의 극(N/S)을 순서대로 바꿔서 가운데 자석을 끌어당기고 밀어내 돌린다.</li>
+<li>자석이 지금 어디 있는지 알아야 다음 코일을 켤 수 있다 → <b>홀센서</b>(자석의 N극/S극을 감지하는 센서)가 그 위치를 알려준다.</li>
+<li>용도: 드론, 전기차, 컴퓨터 쿨러처럼 빠르고 오래 돌아야 하는 곳.</li>
+</ul>
+<div class="pages">
+<figure><img src="교재/p-117.jpg"><figcaption>p117 · 3상 2극 구조</figcaption></figure>
+<figure><img src="교재/p-118.jpg"><figcaption>p118 · 홀센서로 위치 파악</figcaption></figure>
+</div>
+
+<!-- ============ 5 ============ -->
+<h2 id="s5">5. 셀프 테스트 — 답을 가리고 말로 설명해 보기</h2>
+<details><summary>1. 마이크로프로세서와 마이크로컨트롤러의 차이는?</summary>CPU는 연산·제어·레지스터만 있어서 메모리와 입출력을 밖에 붙여야 한다(PC, 스마트폰). MCU는 CPU·메모리·입출력이 한 칩에 있어 작고 싸고 전력을 적게 쓴다(세탁기, 아두이노).</details>
+<details><summary>2. PWM이 뭐고 analogWrite(9, 127)을 하면?</summary>켰다 껐다 하는 시간 비율로 평균 전압을 조절하는 방식. 127은 약 50%라서 평균 약 2.5V, 모터는 중간 속도.</details>
+<details><summary>3. L293D 입력1=HIGH, 입력2=LOW면? 둘 다 LOW면?</summary>한쪽 방향으로 회전. 둘 다 같으면 정지.</details>
+<details><summary>4. 모터를 아두이노 핀에 직접 꽂으면 안 되는 이유?</summary>모터는 큰 전류를 먹어서 아두이노가 과부하로 망가질 수 있다. 트랜지스터나 드라이버가 대신 큰 전류를 흘려준다.</details>
+<details><summary>5. map(val, 0, 1023, 0, 180)에서 val=512면?</summary>약 90. 입력 범위를 출력 범위로 비율대로 옮긴다.</details>
+<details><summary>6. Serial.read()와 Serial.parseInt()의 차이?</summary>read는 글자 1개를 읽는다("153"이면 '1'만). parseInt는 숫자 덩어리를 정수 153으로 읽는다.</details>
+<details><summary>7. 한 스텝 1.8도인 스테핑 모터에 50펄스를 주면?</summary>50 × 1.8 = 90도.</details>
+<details><summary>8. DC / 서보 / 스테핑 / BLDC 각각 언제 쓰나?</summary>DC: 계속 도는 것(선풍기, 바퀴). 서보: 정해진 각도(로봇 관절, 자동문). 스테핑: 정확한 위치(3D 프린터, CNC). BLDC: 빠르고 오래(드론, 전기차).</details>
+<details><summary>9. 서보 선 세 가닥의 역할은?</summary>갈색(검정)=GND, 빨강=전원 5V, 주황(노랑)=신호(PWM).</details>
+<details><summary>10. BLDC에 홀센서가 필요한 이유?</summary>회전하는 자석의 현재 위치를 알아야 다음에 어느 코일을 켤지 정할 수 있어서.</details>
+</main></body></html>

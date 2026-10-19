@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" font-family="Apple SD Gothic Neo, sans-serif">
+<rect width="960" height="520" fill="#fff"/>
+<text x="480" y="44" text-anchor="middle" font-size="26" font-weight="700" fill="#1f2328">서보 모터: 목표 각도로 가서 스스로 멈춘다</text>
+<text x="210" y="90" text-anchor="middle" font-size="19" font-weight="700" fill="#2f6fde">안에 들어 있는 것 (폐쇄 루프)</text>
+<g font-size="17">
+<rect x="40" y="110" width="160" height="60" rx="10" fill="#dbeafe"/><text x="120" y="146" text-anchor="middle">① 목표 각도 입력</text>
+<rect x="220" y="110" width="160" height="60" rx="10" fill="#fde68a"/><text x="300" y="138" text-anchor="middle">② 제어 회로</text><text x="300" y="160" text-anchor="middle" font-size="14">목표와 현재 비교</text>
+<rect x="220" y="210" width="160" height="60" rx="10" fill="#bbf7d0"/><text x="300" y="238" text-anchor="middle">③ DC 모터+기어</text><text x="300" y="260" text-anchor="middle" font-size="14">돌리고 힘을 키움</text>
+<rect x="40" y="210" width="160" height="60" rx="10" fill="#fbcfe8"/><text x="120" y="238" text-anchor="middle">④ 가변저항</text><text x="120" y="260" text-anchor="middle" font-size="14">현재 각도 측정</text>
+</g>
+<g stroke="#333" stroke-width="3" fill="none" marker-end="url(#a)">
+<line x1="200" y1="140" x2="216" y2="140"/><line x1="300" y1="170" x2="300" y2="206"/><line x1="220" y1="240" x2="204" y2="240"/>
+<path d="M120 210 Q 160 190 216 160"/>
+</g>
+<text x="210" y="300" text-anchor="middle" font-size="15" fill="#555">차이가 0이 될 때까지 ②→③→④→② 반복</text>
+<g transform="translate(40,340)" font-size="18">
+<text x="0" y="0" font-weight="700">선 3가닥</text>
+<rect x="0" y="15" width="30" height="20" fill="#7c4a1e"/><text x="40" y="32">갈색(검정) = GND</text>
+<rect x="0" y="50" width="30" height="20" fill="#dc2626"/><text x="40" y="67">빨강 = 전원 5V</text>
+<rect x="0" y="85" width="30" height="20" fill="#f97316"/><text x="40" y="102">주황(노랑) = 신호 → 9번 핀</text>
+</g>
+<g transform="translate(700,330)">
+<path d="M-200 0 A200 200 0 0 1 200 0" fill="#f8fafc" stroke="#333" stroke-width="3"/>
+<line x1="-200" y1="0" x2="200" y2="0" stroke="#333" stroke-width="3"/>
+<text x="-215" y="25" font-size="18" text-anchor="middle">0°</text>
+<text x="0" y="-210" font-size="18" text-anchor="middle">90°</text>
+<text x="215" y="25" font-size="18" text-anchor="middle">180°</text>
+<line x1="0" y1="0" x2="0" y2="-170" stroke="#2f6fde" stroke-width="10" stroke-linecap="round"/>
+<circle cx="0" cy="0" r="14" fill="#2f6fde"/>
+<text x="0" y="60" text-anchor="middle" font-size="17" font-family="Menlo, monospace">myservo.attach(9);</text>
+<text x="0" y="88" text-anchor="middle" font-size="17" font-family="Menlo, monospace">myservo.write(90); // 90도로</text>
+<text x="0" y="120" text-anchor="middle" font-size="15" fill="#555">펄스 1ms=0°, 1.5ms=90°, 2ms=180°</text>
+</g>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>
+</svg>

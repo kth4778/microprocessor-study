@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" font-family="Apple SD Gothic Neo, sans-serif">
+<rect width="960" height="590" fill="#fff"/>
+<text x="480" y="44" text-anchor="middle" font-size="26" font-weight="700" fill="#1f2328">H-브리지: 대각선 두 스위치를 켜면 전기가 모터를 가로질러 흐른다</text>
+<g id="p1" transform="translate(40,80)">
+  <text x="200" y="0" text-anchor="middle" font-size="22" font-weight="700" fill="#2f6fde">정회전 (시계방향)</text>
+  <text x="200" y="40" text-anchor="middle" font-size="16" fill="#555">+ 전원</text>
+  <line x1="60" y1="50" x2="340" y2="50" stroke="#333" stroke-width="4"/>
+  <line x1="60" y1="370" x2="340" y2="370" stroke="#333" stroke-width="4"/>
+  <text x="200" y="400" text-anchor="middle" font-size="16" fill="#555">GND (0V)</text>
+  <line x1="60" y1="50" x2="60" y2="370" stroke="#333" stroke-width="4"/>
+  <line x1="340" y1="50" x2="340" y2="370" stroke="#333" stroke-width="4"/>
+  <line x1="60" y1="210" x2="160" y2="210" stroke="#333" stroke-width="4"/>
+  <line x1="240" y1="210" x2="340" y2="210" stroke="#333" stroke-width="4"/>
+  <circle cx="200" cy="210" r="40" fill="#fff" stroke="#333" stroke-width="4"/>
+  <text x="200" y="220" text-anchor="middle" font-size="28" font-weight="700">M</text>
+  <path d="M175 165 A45 45 0 0 1 228 168" fill="none" stroke="#16a34a" stroke-width="4" marker-end="url(#ag)"/>
+  <rect x="35" y="100" width="50" height="50" rx="8" fill="#16a34a"/><text x="60" y="132" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">S1</text>
+  <rect x="315" y="100" width="50" height="50" rx="8" fill="#cbd5e1"/><text x="340" y="132" text-anchor="middle" fill="#333" font-size="18" font-weight="700">S2</text>
+  <rect x="35" y="270" width="50" height="50" rx="8" fill="#cbd5e1"/><text x="60" y="302" text-anchor="middle" fill="#333" font-size="18" font-weight="700">S3</text>
+  <rect x="315" y="270" width="50" height="50" rx="8" fill="#16a34a"/><text x="340" y="302" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">S4</text>
+  <polyline points="95,60 95,195 155,195" fill="none" stroke="#dc2626" stroke-width="5" stroke-dasharray="10 6" marker-end="url(#ar)"/>
+  <polyline points="245,195 305,195 305,360" fill="none" stroke="#dc2626" stroke-width="5" stroke-dasharray="10 6" marker-end="url(#ar)"/>
+  <text x="200" y="440" text-anchor="middle" font-size="17" fill="#1f2328">S1 + S4 켬 → 전기가 왼쪽에서 오른쪽으로</text>
+</g>
+<g transform="translate(520,80)">
+  <text x="200" y="0" text-anchor="middle" font-size="22" font-weight="700" fill="#c2410c">역회전 (반시계방향)</text>
+  <text x="200" y="40" text-anchor="middle" font-size="16" fill="#555">+ 전원</text>
+  <line x1="60" y1="50" x2="340" y2="50" stroke="#333" stroke-width="4"/>
+  <line x1="60" y1="370" x2="340" y2="370" stroke="#333" stroke-width="4"/>
+  <text x="200" y="400" text-anchor="middle" font-size="16" fill="#555">GND (0V)</text>
+  <line x1="60" y1="50" x2="60" y2="370" stroke="#333" stroke-width="4"/>
+  <line x1="340" y1="50" x2="340" y2="370" stroke="#333" stroke-width="4"/>
+  <line x1="60" y1="210" x2="160" y2="210" stroke="#333" stroke-width="4"/>
+  <line x1="240" y1="210" x2="340" y2="210" stroke="#333" stroke-width="4"/>
+  <circle cx="200" cy="210" r="40" fill="#fff" stroke="#333" stroke-width="4"/>
+  <text x="200" y="220" text-anchor="middle" font-size="28" font-weight="700">M</text>
+  <path d="M225 165 A45 45 0 0 0 172 168" fill="none" stroke="#c2410c" stroke-width="4" marker-end="url(#ao)"/>
+  <rect x="35" y="100" width="50" height="50" rx="8" fill="#cbd5e1"/><text x="60" y="132" text-anchor="middle" fill="#333" font-size="18" font-weight="700">S1</text>
+  <rect x="315" y="100" width="50" height="50" rx="8" fill="#16a34a"/><text x="340" y="132" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">S2</text>
+  <rect x="35" y="270" width="50" height="50" rx="8" fill="#16a34a"/><text x="60" y="302" text-anchor="middle" fill="#fff" font-size="18" font-weight="700">S3</text>
+  <rect x="315" y="270" width="50" height="50" rx="8" fill="#cbd5e1"/><text x="340" y="302" text-anchor="middle" fill="#333" font-size="18" font-weight="700">S4</text>
+  <polyline points="305,60 305,195 245,195" fill="none" stroke="#dc2626" stroke-width="5" stroke-dasharray="10 6" marker-end="url(#ar)"/>
+  <polyline points="155,195 95,195 95,360" fill="none" stroke="#dc2626" stroke-width="5" stroke-dasharray="10 6" marker-end="url(#ar)"/>
+  <text x="200" y="440" text-anchor="middle" font-size="17" fill="#1f2328">S2 + S3 켬 → 전기가 오른쪽에서 왼쪽으로</text>
+</g>
+<text x="480" y="555" text-anchor="middle" font-size="17" fill="#c2410c" font-weight="700">⚠ 같은 쪽 위아래(S1+S3 또는 S2+S4)를 동시에 켜면 전원이 GND로 바로 이어져 합선!</text><text x="480" y="580" text-anchor="middle" font-size="16" fill="#555">교재 p33과 대응: 왼쪽 위 Q4 = S1, 오른쪽 아래 Q1 = S4 (스위치 = 트랜지스터)</text>
+<defs>
+<marker id="ar" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+<marker id="ag" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+<marker id="ao" markerWidth="10" markerHeight="10" refX="6" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker>
+</defs>
+</svg>
