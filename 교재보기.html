@@ -31,10 +31,19 @@ figcaption{font-size:13px;color:var(--muted);padding:4px 2px 0}
 <h1>마이크로프로세서 그림 교재 <span id="ptext"></span></h1>
 
 <nav>
-<a href="#p1">도입 p1</a><a href="#p10">DC 속도 p10</a><a href="#p32">H-브리지 p32</a><a href="#p37">드라이버 p37</a><a href="#p42">DC 방향 예제 p42</a><a href="#p62">서보 p62</a><a href="#p77">map p77</a><a href="#p87">자동문 p87</a><a href="#p97">스테핑 p97</a><a href="#p117">BLDC p117</a>
+<a href="#exam">★시험 요약</a><a href="#p1">도입 p1</a><a href="#p10">DC 속도 p10</a><a href="#p32">H-브리지 p32</a><a href="#p37">드라이버 p37</a><a href="#p42">DC 방향 예제 p42</a><a href="#p62">서보 p62</a><a href="#p77">map p77</a><a href="#p87">자동문 p87</a><a href="#p97">스테핑 p97</a><a href="#p117">BLDC p117</a>
 </nav>
 </header>
-<main id="m"></main>
+<main id="m">
+<section id="exam">
+<h2>★ 시험 출제 예상 요약 5장</h2>
+<figure><img src="시험요약/1-mcu-uno.jpg" alt="시험 포인트 1"><figcaption>① MCU와 아두이노 우노 — 숫자 외우기</figcaption></figure>
+<figure><img src="시험요약/2-pwm-dc.jpg" alt="시험 포인트 2"><figcaption>② PWM과 DC 모터 속도 제어</figcaption></figure>
+<figure><img src="시험요약/3-hbridge-l293d.jpg" alt="시험 포인트 3"><figcaption>③ H-브리지와 L293D — 방향 제어</figcaption></figure>
+<figure><img src="시험요약/4-servo.jpg" alt="시험 포인트 4"><figcaption>④ 서보 모터 — 각도 제어</figcaption></figure>
+<figure><img src="시험요약/5-stepper-bldc.jpg" alt="시험 포인트 5"><figcaption>⑤ 스테핑 모터 & BLDC 모터</figcaption></figure>
+</section>
+</main>
 <script>
 const m=document.getElementById('m');
 const pad=n=>String(n).padStart(3,'0');
